@@ -230,13 +230,5 @@ const DeviceForm = {
     }
 };
 
-// Initialize when ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        Devices.init();
-        DeviceForm.init();
-    });
-} else {
-    Devices.init();
-    DeviceForm.init();
-}
+// Initialize when tab is activated (called from app.js)
+// Devices.init() and DeviceForm.init() are called by app.js when switching to devices tab

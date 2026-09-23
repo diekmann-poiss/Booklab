@@ -698,16 +698,23 @@ html, body {
 .device-color-14 { border-left-color: #e91e63; }
 .device-color-15 { border-left-color: #cddc39; }
 
+/* ===== Devices List ===== */
+.devices-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
 /* ===== Device Cards ===== */
 .device-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    cursor: pointer;
 }
 
 .device-info {
     flex: 1;
+    padding-right: var(--spacing);
 }
 
 .device-name {

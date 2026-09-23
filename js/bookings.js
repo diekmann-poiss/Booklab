@@ -346,13 +346,5 @@ const BookingForm = {
     }
 };
 
-// Initialize when ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        Bookings.init();
-        BookingForm.init();
-    });
-} else {
-    Bookings.init();
-    BookingForm.init();
-}
+// Initialize when tab is activated (called from app.js)
+// Bookings.init() and BookingForm.init() are called by app.js when switching to bookings tab

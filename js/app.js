@@ -124,22 +124,12 @@ const App = {
     
     // Initialize all modules
     initModules() {
-        // Already initialized by their own DOMContentLoaded handlers
-        // This is just a backup initialization
-        if (typeof Calendar !== 'undefined') {
+        // Initialize calendar immediately since it's the default tab
+        if (typeof Calendar !== 'undefined' && !window.calendarInitialized) {
             Calendar.init();
             window.calendarInitialized = true;
         }
-        if (typeof Devices !== 'undefined') {
-            Devices.init();
-            DeviceForm.init();
-            window.devicesInitialized = true;
-        }
-        if (typeof Bookings !== 'undefined') {
-            Bookings.init();
-            BookingForm.init();
-            window.bookingsInitialized = true;
-        }
+        // Devices and Bookings will be initialized when their tabs are first activated
     },
     
     // Refresh all
