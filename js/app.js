@@ -68,13 +68,20 @@ const App = {
         if (tab === 'calendar' && !window.calendarInitialized) {
             Calendar.init();
             window.calendarInitialized = true;
-        } else if (tab === 'devices' && !window.devicesInitialized) {
+        }
+        
+        // BookingForm is needed by both calendar (FAB, day-detail) and bookings tab
+        if (!window.bookingFormInitialized) {
+            BookingForm.init();
+            window.bookingFormInitialized = true;
+        }
+        
+        if (tab === 'devices' && !window.devicesInitialized) {
             Devices.init();
             DeviceForm.init();
             window.devicesInitialized = true;
         } else if (tab === 'bookings' && !window.bookingsInitialized) {
             Bookings.init();
-            BookingForm.init();
             window.bookingsInitialized = true;
         }
     },
@@ -128,6 +135,11 @@ const App = {
         if (typeof Calendar !== 'undefined' && !window.calendarInitialized) {
             Calendar.init();
             window.calendarInitialized = true;
+        }
+        // BookingForm is needed by calendar tab (FAB, day-detail)
+        if (typeof BookingForm !== 'undefined' && !window.bookingFormInitialized) {
+            BookingForm.init();
+            window.bookingFormInitialized = true;
         }
         // Devices and Bookings will be initialized when their tabs are first activated
     },
