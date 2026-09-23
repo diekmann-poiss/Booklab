@@ -698,6 +698,51 @@ html, body {
 .device-color-14 { border-left-color: #e91e63; }
 .device-color-15 { border-left-color: #cddc39; }
 
+/* ===== Device Cards ===== */
+.device-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.device-info {
+    flex: 1;
+}
+
+.device-name {
+    font-weight: 500;
+}
+
+.device-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    padding-left: var(--spacing);
+}
+
+.device-actions .icon-btn {
+    padding: var(--spacing-sm);
+    opacity: 0.6;
+    transition: var(--transition);
+}
+
+.device-actions .icon-btn:hover {
+    opacity: 1;
+    background: var(--background);
+}
+
+.device-actions .edit-btn {
+    opacity: 0.6;
+}
+
+.device-actions .delete-btn {
+    color: #e74c3c;
+}
+
+.device-actions .delete-btn:hover {
+    background: rgba(231, 76, 60, 0.1);
+}
+
 /* ===== Booking Chip Colors ===== */
 .booking-chip {
     display: inline-block;
@@ -709,6 +754,62 @@ html, body {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 80px;
+}
+
+/* ===== Header Actions ===== */
+.header-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+.devices-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing);
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing);
+}
+
+.devices-header .search-bar {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-sm) var(--spacing);
+}
+
+.devices-header .search-bar input {
+    border: none;
+    background: none;
+    outline: none;
+    flex: 1;
+    font-size: 1rem;
+}
+
+.devices-header .search-bar i {
+    color: var(--text-secondary);
+}
+
+@media (max-width: 600px) {
+    .devices-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .devices-header .search-bar {
+        min-width: 100%;
+    }
+    
+    .devices-header .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
 }
 
 .booking-chip-0 { background: #26a69a; color: white; }

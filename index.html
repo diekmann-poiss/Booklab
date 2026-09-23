@@ -107,13 +107,14 @@
                             <i class="fas fa-search"></i>
                             <input type="text" id="device-search" placeholder="Search devices...">
                         </div>
-                        <button id="add-device-btn" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Add Device
-                        </button>
-                    </div>
-                    
-                    <div class="edit-controls" style="display: none;">
-                        <button id="edit-done-btn" class="btn btn-secondary">Done</button>
+                        <div class="header-actions">
+                            <button id="toggle-delete-btn" class="btn btn-secondary" title="Show delete buttons">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button id="add-device-btn" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Device
+                            </button>
+                        </div>
                     </div>
                     
                     <div id="devices-list" class="devices-list"></div>

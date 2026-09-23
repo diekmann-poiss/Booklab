@@ -32,15 +32,13 @@ const Devices = {
             DeviceForm.open();
         });
         
-        // Edit toggle
-        document.getElementById('edit-toggle-btn')?.addEventListener('click', () => {
-            this.toggleEdit();
-        });
-        
-        // Done button
-        document.getElementById('edit-done-btn').addEventListener('click', () => {
-            this.toggleEdit(false);
-        });
+        // Toggle delete buttons
+        const toggleDeleteBtn = document.getElementById('toggle-delete-btn');
+        if (toggleDeleteBtn) {
+            toggleDeleteBtn.addEventListener('click', () => {
+                this.toggleEdit();
+            });
+        }
         
         // Search
         this.deviceSearchElement.addEventListener('input', (e) => {
@@ -57,7 +55,7 @@ const Devices = {
         });
     },
     
-    // Toggle edit mode
+    // Toggle edit mode (now only controls delete buttons)
     toggleEdit(enable) {
         if (enable === undefined) {
             enable = !this.isEditing;
@@ -65,14 +63,23 @@ const Devices = {
         
         this.isEditing = enable;
         
-        // Update UI
-        document.querySelector('.edit-controls').style.display = enable ? 'flex' : 'none';
-        document.getElementById('add-device-btn').style.display = enable ? 'none' : 'flex';
-        
-        // Update device cards
-        document.querySelectorAll('.device-card').forEach(card => {
-            card.querySelector('.device-actions').style.display = enable ? 'flex' : 'none';
+        // Update delete buttons visibility
+        document.querySelectorAll('.device-card .delete-btn').forEach(btn => {
+            btn.style.display = enable ? 'flex' : 'none';
         });
+        
+        // Update toggle button icon
+        const toggleBtn = document.getElementById('toggle-delete-btn');
+        if (toggleBtn) {
+            const icon = toggleBtn.querySelector('i');
+            if (enable) {
+                icon.className = 'fas fa-times';
+                toggleBtn.title = 'Hide delete buttons';
+            } else {
+                icon.className = 'fas fa-trash';
+                toggleBtn.title = 'Show delete buttons';
+            }
+        }
         
         this.render();
     },
@@ -102,16 +109,17 @@ const Devices = {
         for (const device of filteredDevices) {
             const colorClass = AppData.getDeviceColor(device.name);
             
+            // Always show edit button, delete button visible in edit mode
             html += `
                 <div class="card device-card ${colorClass}" data-device-id="${device.id}">
                     <div class="device-info">
                         <div class="device-name">${Utils.escapeHtml(device.name)}</div>
                     </div>
-                    <div class="device-actions" style="display: ${this.isEditing ? 'flex' : 'none'}">
-                        <button class="icon-btn edit-btn" onclick="Devices.editDevice('${device.id}')" title="Rename">
+                    <div class="device-actions">
+                        <button class="icon-btn edit-btn" onclick="Devices.editDevice('${device.id}')" title="Edit">
                             <i class="fas fa-pencil-alt"></i>
                         </button>
-                        <button class="icon-btn delete-btn" onclick="Devices.deleteDevice('${device.id}')" title="Delete">
+                        <button class="icon-btn delete-btn" onclick="Devices.deleteDevice('${device.id}')" title="Delete" style="display: ${this.isEditing ? 'flex' : 'none'}">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -134,7 +142,6 @@ const Devices = {
     deleteDevice(deviceId) {
         if (confirm('Are you sure you want to delete this device? This will also delete all bookings for this device.')) {
             AppData.deleteDevice(deviceId);
-            this.toggleEdit(false);
         }
     },
     
@@ -220,7 +227,6 @@ const DeviceForm = {
         }
         
         this.close();
-        Devices.toggleEdit(false);
     }
 };
 
