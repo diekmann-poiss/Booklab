@@ -221,9 +221,12 @@ html, body {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     box-shadow: var(--shadow);
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 100;
+    min-height: 60px;
 }
 
 .header-left h2 {
@@ -235,6 +238,7 @@ html, body {
 .header-right {
     display: flex;
     gap: var(--spacing-sm);
+    align-items: center;
 }
 
 .icon-btn {
@@ -246,6 +250,8 @@ html, body {
     padding: var(--spacing-sm);
     border-radius: var(--border-radius-sm);
     transition: var(--transition);
+    position: relative;
+    z-index: 1;
 }
 
 .icon-btn:hover {
@@ -257,7 +263,10 @@ html, body {
     flex: 1;
     overflow-y: auto;
     padding: var(--spacing);
+    padding-top: 100px; /* Clear fixed header with safe margin */
     padding-bottom: 80px; /* Space for bottom nav */
+    position: relative;
+    z-index: 1;
 }
 
 .tab-content {
@@ -658,10 +667,11 @@ html, body {
         border-top: none;
         border-bottom: 1px solid var(--border);
         box-shadow: var(--shadow);
+        z-index: 101;
     }
     
     .main-content {
-        padding-top: 80px;
+        padding-top: 160px; /* Clear fixed header (60px) + bottom-nav (40px) + margin */
         padding-bottom: var(--spacing);
     }
     
@@ -670,6 +680,8 @@ html, body {
         top: 60px;
         left: 0;
         right: 0;
+        z-index: 100;
+        min-height: 60px;
     }
     
     .nav-item {
@@ -773,6 +785,8 @@ html, body {
     gap: var(--spacing);
     align-items: center;
     margin-bottom: var(--spacing);
+    position: relative;
+    z-index: 1;
 }
 
 .devices-header .search-bar,
@@ -837,6 +851,7 @@ html, body {
     
     .header-actions .btn {
         flex: 1;
+        min-width: 0;
     }
 }
 
