@@ -62,6 +62,17 @@ const Calendar = {
         window.addEventListener('dataUpdated', () => {
             this.render();
         });
+        
+        // Setup day detail modal close button
+        const dayDetailModal = document.getElementById('day-detail-modal');
+        if (dayDetailModal) {
+            dayDetailModal.querySelector('.modal-close').addEventListener('click', () => {
+                this.closeDayDetail();
+            });
+            dayDetailModal.querySelector('.modal-overlay').addEventListener('click', () => {
+                this.closeDayDetail();
+            });
+        }
     },
     
     // Switch view
@@ -328,6 +339,12 @@ const Calendar = {
     
     // Open day detail
     openDayDetail(dateStr) {
+        // Ensure BookingForm is initialized
+        if (typeof BookingForm !== 'undefined' && !window.bookingFormInitialized) {
+            BookingForm.init();
+            window.bookingFormInitialized = true;
+        }
+        
         const modal = document.getElementById('day-detail-modal');
         const date = new Date(dateStr);
         const dayName = Utils.getWeekdayName(date.getDay());

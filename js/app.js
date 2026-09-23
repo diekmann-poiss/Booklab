@@ -90,6 +90,11 @@ const App = {
     setupFAB() {
         const fab = document.getElementById('fab');
         fab.addEventListener('click', () => {
+            // Ensure BookingForm is initialized
+            if (typeof BookingForm !== 'undefined' && !window.bookingFormInitialized) {
+                BookingForm.init();
+                window.bookingFormInitialized = true;
+            }
             if (this.currentTab === 'calendar') {
                 BookingForm.open(Utils.getCurrentDate());
             } else if (this.currentTab === 'bookings') {
