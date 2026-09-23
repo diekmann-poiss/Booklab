@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookLab - BOKU University</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen active">
+            <div class="login-container">
+                <div class="logo">
+                    <h1>BookLab</h1>
+                    <p class="subtitle">Institute for Soil Bioengineering and Landscape Construction</p>
+                    <p class="subtitle-small">BOKU University</p>
+                </div>
+                
+                <form id="login-form" class="login-form">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" placeholder="Enter username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                </form>
+                
+                <div id="login-error" class="error-message" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Main App Screen -->
+        <div id="main-screen" class="screen" style="display: none;">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h2>BookLab</h2>
+                </div>
+                <div class="header-right">
+                    <button id="theme-toggle" class="icon-btn" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button id="info-btn" class="icon-btn" title="Info">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                    <button id="signout-btn" class="icon-btn" title="Sign out">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Calendar Tab -->
+                <div id="calendar-tab" class="tab-content active">
+                    <div class="calendar-controls">
+                        <div class="view-toggle">
+                            <button id="month-view-btn" class="toggle-btn active">Month</button>
+                            <button id="week-view-btn" class="toggle-btn">Week</button>
+                        </div>
+                        <div class="calendar-nav">
+                            <button id="prev-btn" class="nav-btn">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button id="today-btn" class="nav-btn">Today</button>
+                            <button id="next-btn" class="nav-btn">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="month-view" class="calendar-view">
+                        <div class="month-header">
+                            <span id="month-year"></span>
+                        </div>
+                        <div class="weekdays">
+                            <span>Mon</span>
+                            <span>Tue</span>
+                            <span>Wed</span>
+                            <span>Thu</span>
+                            <span>Fri</span>
+                            <span>Sat</span>
+                            <span>Sun</span>
+                        </div>
+                        <div id="month-grid" class="month-grid"></div>
+                    </div>
+                    
+                    <div id="week-view" class="calendar-view" style="display: none;">
+                        <div class="week-header">
+                            <span id="week-range"></span>
+                        </div>
+                        <div id="week-grid" class="week-grid"></div>
+                    </div>
+                </div>
+
+                <!-- Devices Tab -->
+                <div id="devices-tab" class="tab-content">
+                    <div class="devices-header">
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="device-search" placeholder="Search devices...">
+                        </div>
+                        <button id="add-device-btn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Device
+                        </button>
+                    </div>
+                    
+                    <div class="edit-controls" style="display: none;">
+                        <button id="edit-done-btn" class="btn btn-secondary">Done</button>
+                    </div>
+                    
+                    <div id="devices-list" class="devices-list"></div>
+                    
+                    <div id="empty-devices" class="empty-state" style="display: none;">
+                        <i class="fas fa-microscope"></i>
+                        <p>No devices yet</p>
+                        <p class="subtitle">Add your first measurement device or sensor</p>
+                    </div>
+                </div>
+
+                <!-- Bookings Tab -->
+                <div id="bookings-tab" class="tab-content">
+                    <div class="bookings-header">
+                        <div class="booking-tabs">
+                            <button id="upcoming-btn" class="booking-tab-btn active">Upcoming</button>
+                            <button id="past-btn" class="booking-tab-btn">Past</button>
+                        </div>
+                        <div class="export-buttons">
+                            <button id="export-csv-btn" class="btn btn-secondary">
+                                <i class="fas fa-file-csv"></i> CSV
+                            </button>
+                            <button id="export-ics-btn" class="btn btn-secondary">
+                                <i class="fas fa-calendar-alt"></i> ICS
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="bookings-list" class="bookings-list"></div>
+                    
+                    <div id="empty-bookings" class="empty-state" style="display: none;">
+                        <i class="fas fa-calendar-check"></i>
+                        <p>No bookings yet</p>
+                        <p class="subtitle">Start by booking a device</p>
+                    </div>
+                </div>
+
+                <!-- Day Detail Modal -->
+                <div id="day-detail-modal" class="modal" style="display: none;">
+                    <div class="modal-overlay"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button class="modal-close">&times;</button>
+                            <h3 id="day-detail-date"></h3>
+                        </div>
+                        <div id="day-detail-body" class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button id="add-booking-from-day" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Booking
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Booking Form Modal -->
+                <div id="booking-modal" class="modal" style="display: none;">
+                    <div class="modal-overlay"></div>
+                    <div class="modal-content booking-form-container">
+                        <div class="modal-header">
+                            <button class="modal-close">&times;</button>
+                            <h3>New Booking</h3>
+                        </div>
+                        <form id="booking-form" class="booking-form">
+                            <div class="form-group">
+                                <label for="booking-name">Your Name *</label>
+                                <input type="text" id="booking-name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Devices *</label>
+                                <div id="device-checkboxes" class="device-checkboxes"></div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="booking-date">Date *</label>
+                                    <input type="date" id="booking-date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="booking-start">Start Time *</label>
+                                    <input type="time" id="booking-start" value="09:00" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="booking-end">End Time *</label>
+                                    <input type="time" id="booking-end" value="11:00" required>
+                                </div>
+                            </div>
+                            
+                            <div id="conflict-warning" class="conflict-warning" style="display: none;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>Conflicting bookings:</p>
+                                <ul id="conflict-list"></ul>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <span id="book-btn-text">Book Device</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Device Form Modal -->
+                <div id="device-modal" class="modal" style="display: none;">
+                    <div class="modal-overlay"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button class="modal-close">&times;</button>
+                            <h3 id="device-modal-title">Add Device</h3>
+                        </div>
+                        <form id="device-form" class="device-form">
+                            <div class="form-group">
+                                <label for="device-name">Device Name *</label>
+                                <input type="text" id="device-name" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary modal-close-btn">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Info Modal -->
+                <div id="info-modal" class="modal" style="display: none;">
+                    <div class="modal-overlay"></div>
+                    <div class="modal-content info-modal">
+                        <div class="modal-header">
+                            <button class="modal-close">&times;</button>
+                            <h3>About BookLab</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="info-content">
+                                <p><strong>BookLab</strong> is a booking application for managing shared measurement devices and sensors at the <strong>Institute for Soil Bioengineering and Landscape Construction</strong>, BOKU University.</p>
+                                
+                                <p>Created by <strong>Max Poiss</strong></p>
+                                
+                                <div id="owner-section" style="display: none;">
+                                    <hr>
+                                    <h4>Owner Controls</h4>
+                                    <p>Shared login: <code id="shared-login-display"></code></p>
+                                    <button id="create-shared-login" class="btn btn-secondary">
+                                        Create / Verify Shared Login
+                                    </button>
+                                    <div id="shared-login-status" style="margin-top: 10px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confirmation Modal -->
+                <div id="confirm-modal" class="modal" style="display: none;">
+                    <div class="modal-overlay"></div>
+                    <div class="modal-content confirm-modal">
+                        <div class="modal-header">
+                            <h3 id="confirm-title"></h3>
+                        </div>
+                        <div class="modal-body">
+                            <p id="confirm-message"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="confirm-cancel" class="btn btn-secondary">Cancel</button>
+                            <button id="confirm-ok" class="btn btn-danger">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Action Button -->
+                <button id="fab" class="fab">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </main>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav">
+                <button class="nav-item active" data-tab="calendar">
+                    <i class="fas fa-calendar"></i>
+                    <span>Calendar</span>
+                </button>
+                <button class="nav-item" data-tab="devices">
+                    <i class="fas fa-microscope"></i>
+                    <span>Devices</span>
+                </button>
+                <button class="nav-item" data-tab="bookings">
+                    <i class="fas fa-list"></i>
+                    <span>Bookings</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/calendar.js"></script>
+    <script src="js/devices.js"></script>
+    <script src="js/bookings.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
