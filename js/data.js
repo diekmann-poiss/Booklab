@@ -6,7 +6,7 @@ const GitHubConfig = {
     // GitHub repository info (derived from Pages URL)
     USERNAME: 'diekmann-poiss',
     REPO: 'Booklab',
-    BRANCH: 'main',
+    BRANCH: 'master',
     
     // API base URL
     API_BASE: 'https://api.github.com',
