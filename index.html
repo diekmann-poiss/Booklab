@@ -44,6 +44,9 @@
                     <h2>BookLab</h2>
                 </div>
                 <div class="header-right">
+                    <button id="refresh-github-btn" class="icon-btn" title="Refresh from GitHub" style="display: none;">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
                     <button id="theme-toggle" class="icon-btn" title="Toggle theme">
                         <i class="fas fa-moon"></i>
                     </button>
@@ -262,6 +265,26 @@
                                         Create / Verify Shared Login
                                     </button>
                                     <div id="shared-login-status" style="margin-top: 10px;"></div>
+                                    
+                                    <hr style="margin-top: 20px;">
+                                    <h4>GitHub Sync</h4>
+                                    <p id="sync-status" style="margin-bottom: 10px;">GitHub sync: Not configured</p>
+                                    <div class="form-group" style="margin-bottom: 10px;">
+                                        <label for="github-token">GitHub Token</label>
+                                        <input type="password" id="github-token" placeholder="Enter GitHub Personal Access Token">
+                                    </div>
+                                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                        <button id="save-github-token" class="btn btn-primary">
+                                            <i class="fas fa-save"></i> Save Token
+                                        </button>
+                                        <button id="refresh-from-github" class="btn btn-secondary">
+                                            <i class="fas fa-sync-alt"></i> Refresh from GitHub
+                                        </button>
+                                        <button id="save-to-github" class="btn btn-secondary">
+                                            <i class="fas fa-upload"></i> Save to GitHub
+                                        </button>
+                                    </div>
+                                    <div id="sync-result" style="margin-top: 10px;"></div>
                                 </div>
                             </div>
                         </div>

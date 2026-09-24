@@ -1,3 +1,32 @@
+// ===== GitHub Configuration =====
+const GitHubConfig = {
+    // GitHub Pages URL
+    PAGES_URL: 'https://diekmann-poiss.github.io/Booklab/',
+    
+    // GitHub repository info (derived from Pages URL)
+    USERNAME: 'diekmann-poiss',
+    REPO: 'Booklab',
+    BRANCH: 'main',
+    
+    // API base URL
+    API_BASE: 'https://api.github.com',
+    RAW_BASE: 'https://raw.githubusercontent.com',
+    
+    // Data file paths
+    DEVICES_FILE: 'data/devices.json',
+    BOOKINGS_FILE: 'data/bookings.json',
+    
+    // Get raw URL for a file
+    getRawUrl(filePath) {
+        return `${this.RAW_BASE}/${this.USERNAME}/${this.REPO}/${this.BRANCH}/${filePath}`;
+    },
+    
+    // Get API URL for a file
+    getApiUrl(filePath) {
+        return `${this.API_BASE}/repos/${this.USERNAME}/${this.REPO}/contents/${filePath}`;
+    }
+};
+
 // ===== Data Store =====
 const AppData = {
     // Device storage key
@@ -5,6 +34,9 @@ const AppData = {
     
     // Bookings storage key
     BOOKINGS_KEY: 'booklab_bookings',
+    
+    // GitHub token storage key
+    GITHUB_TOKEN_KEY: 'booklab_github_token',
     
     // Authentication
     AUTH_KEY: 'booklab_auth',
@@ -21,13 +53,187 @@ const AppData = {
     SHARED_USERNAME: 'iblb',
     SHARED_PASSWORD: 'iblb7300',
     
+    // Data state
+    useGitHub: true, // Flag to enable/disable GitHub sync
+    
     // Initialize
     init() {
-        // Seed initial devices if none exist
+        // Check if we should use GitHub sync
+        // For now, default to false to maintain backward compatibility
+        // Users can enable it via settings or by setting a token
+        this.useGitHub = !!this.getGitHubToken();
+        
+        // Seed initial devices if none exist in localStorage
         if (!this.getDevices().length) {
             this.seedDevices();
         }
+        
+        // If GitHub token is set, try to load from GitHub
+        if (this.useGitHub) {
+            this.loadFromGitHub().catch(() => {
+                console.log('GitHub not available, using localStorage');
+            });
+        }
     },
+    
+    // ===== GitHub Token Management =====
+    
+    setGitHubToken(token) {
+        if (token) {
+            localStorage.setItem(this.GITHUB_TOKEN_KEY, token);
+            this.useGitHub = true;
+        } else {
+            localStorage.removeItem(this.GITHUB_TOKEN_KEY);
+            this.useGitHub = false;
+        }
+    },
+    
+    getGitHubToken() {
+        return localStorage.getItem(this.GITHUB_TOKEN_KEY);
+    },
+    
+    hasGitHubToken() {
+        return !!this.getGitHubToken();
+    },
+    
+    // ===== GitHub Read Methods =====
+    
+    async loadFromGitHub() {
+        try {
+            const [devices, bookings] = await Promise.all([
+                this.fetchFromGitHub(GitHubConfig.DEVICES_FILE),
+                this.fetchFromGitHub(GitHubConfig.BOOKINGS_FILE)
+            ]);
+            
+            if (devices) {
+                this.saveDevices(devices);
+            }
+            
+            if (bookings) {
+                this.saveBookings(bookings);
+            }
+            
+            this.notifyUpdate();
+            return true;
+        } catch (error) {
+            console.error('Error loading from GitHub:', error);
+            return false;
+        }
+    },
+    
+    async fetchFromGitHub(filePath) {
+        try {
+            const url = GitHubConfig.getRawUrl(filePath);
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                if (response.status === 404) {
+                    return null; // File doesn't exist yet
+                }
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error(`Error fetching ${filePath} from GitHub:`, error);
+            return null;
+        }
+    },
+    
+    // ===== GitHub Write Methods =====
+    
+    async saveToGitHub(filePath, data) {
+        const token = this.getGitHubToken();
+        
+        if (!token) {
+            console.error('No GitHub token set. Cannot save to GitHub.');
+            return { success: false, error: 'No GitHub token' };
+        }
+        
+        try {
+            const apiUrl = GitHubConfig.getApiUrl(filePath);
+            const content = JSON.stringify(data, null, 2);
+            const encodedContent = btoa(unescape(encodeURIComponent(content)));
+            
+            // First, get the current file SHA (for updates)
+            let sha = null;
+            try {
+                const getResponse = await fetch(apiUrl, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (getResponse.ok) {
+                    const fileData = await getResponse.json();
+                    sha = fileData.sha;
+                }
+            } catch (e) {
+                // File doesn't exist yet, that's fine
+                console.log('File does not exist yet, will create new one');
+            }
+            
+            // Prepare the commit
+            const commitData = {
+                message: `Update ${filePath} via BookLab at ${new Date().toISOString()}`,
+                content: encodedContent,
+                branch: GitHubConfig.BRANCH
+            };
+            
+            if (sha) {
+                commitData.sha = sha;
+            }
+            
+            // Send the update
+            const response = await fetch(apiUrl, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(commitData)
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('GitHub API error:', errorData);
+                return { success: false, error: errorData.message || 'API error' };
+            }
+            
+            return { success: true };
+        } catch (error) {
+            console.error('Error saving to GitHub:', error);
+            return { success: false, error: error.message };
+        }
+    },
+    
+    async saveAllToGitHub() {
+        const devices = this.getDevices();
+        const bookings = this.getBookings();
+        
+        const devicesResult = await this.saveToGitHub(GitHubConfig.DEVICES_FILE, devices);
+        const bookingsResult = await this.saveToGitHub(GitHubConfig.BOOKINGS_FILE, bookings);
+        
+        return {
+            devices: devicesResult,
+            bookings: bookingsResult
+        };
+    },
+    
+    // ===== Sync Status =====
+    
+    getSyncStatus() {
+        if (!this.hasGitHubToken()) {
+            return 'No GitHub token configured. Data is stored locally only.';
+        }
+        return this.useGitHub ? 'GitHub sync enabled' : 'GitHub sync disabled';
+    },
+    
+    // ===== Data Access Methods (Synchronous) =====
+    // These maintain backward compatibility with existing code
     
     // Get devices
     getDevices() {
@@ -199,6 +405,12 @@ const AppData = {
     // Notify update to all listeners
     notifyUpdate() {
         window.dispatchEvent(new Event('dataUpdated'));
+    },
+    
+    // ===== Refresh from GitHub =====
+    
+    async refreshFromGitHub() {
+        return this.loadFromGitHub();
     },
     
     // Authentication methods

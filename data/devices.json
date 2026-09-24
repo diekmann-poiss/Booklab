@@ -1,0 +1,10 @@
+[
+  {"id": "seed_0", "name": "Soil Moisture Sensor"},
+  {"id": "seed_1", "name": "pH Meter"},
+  {"id": "seed_2", "name": "Temperature Logger"},
+  {"id": "seed_3", "name": "Spectrophotometer"},
+  {"id": "seed_4", "name": "Gas Chromatograph"},
+  {"id": "seed_5", "name": "Tensometer"},
+  {"id": "seed_6", "name": "Drones"},
+  {"id": "seed_7", "name": "Laser Scanner"}
+]

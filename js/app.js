@@ -20,6 +20,9 @@ const App = {
         // Setup sign out
         this.setupSignOut();
         
+        // Setup refresh from GitHub button
+        this.setupRefreshButton();
+        
         // Setup info button
         this.setupInfoButton();
         
@@ -125,6 +128,38 @@ const App = {
         document.getElementById('signout-btn').addEventListener('click', () => {
             Auth.confirmSignOut();
         });
+    },
+    
+    // Setup refresh from GitHub button
+    setupRefreshButton() {
+        const refreshBtn = document.getElementById('refresh-github-btn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', async () => {
+                if (!AppData.hasGitHubToken()) {
+                    alert('Please configure GitHub token first (Owner > Info > GitHub Sync)');
+                    return;
+                }
+                
+                try {
+                    const success = await AppData.refreshFromGitHub();
+                    if (success) {
+                        alert('Refreshed from GitHub successfully!');
+                        this.refresh();
+                    } else {
+                        alert('Failed to refresh from GitHub');
+                    }
+                } catch (error) {
+                    alert('Error refreshing: ' + error.message);
+                }
+            });
+            
+            // Update visibility based on token
+            const updateVisibility = () => {
+                refreshBtn.style.display = AppData.hasGitHubToken() ? 'flex' : 'none';
+            };
+            
+            updateVisibility();
+        }
     },
     
     // Setup info button
